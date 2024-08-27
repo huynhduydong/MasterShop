@@ -17,7 +17,6 @@ public class ProductItem extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     @JsonBackReference
-
     private Product product;
 
     @Column(nullable = false, length = 64)
