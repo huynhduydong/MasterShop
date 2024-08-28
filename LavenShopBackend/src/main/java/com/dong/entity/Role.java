@@ -1,31 +1,33 @@
 package com.dong.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "roles")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Role  extends BaseEntity{
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(unique = true, nullable = false, length = 40)
     private String name;
 
-    @Column(nullable = false, length = 150)
-    private String description;
-
-    public Role(int id) {
-        this.id = id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role role)) return false;
+        return name.equals(role.name);
     }
 
-    public Role(String name, String description) {
-        this.name = name;
-        this.description = description;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }
