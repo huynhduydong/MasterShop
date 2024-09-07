@@ -1,6 +1,6 @@
 package com.dong.exception;
 
-import com.dong.dto.error.ErrorDetails;
+import com.dong.dto.message.ErrorDetails;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

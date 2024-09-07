@@ -1,4 +1,4 @@
-package com.dong.dto;
+package com.dong.dto.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

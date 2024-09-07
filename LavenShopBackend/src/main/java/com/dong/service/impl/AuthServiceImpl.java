@@ -1,6 +1,6 @@
 package com.dong.service.impl;
 
-import com.dong.dto.RegisterDto;
+import com.dong.dto.message.RegisterDto;
 import com.dong.entity.Role;
 import com.dong.entity.User;
 import com.dong.exception.LavenAPIException;

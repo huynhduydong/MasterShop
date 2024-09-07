@@ -1,4 +1,4 @@
-package com.dong.dto.error;
+package com.dong.dto.message;
 
 import java.util.Date;
 
