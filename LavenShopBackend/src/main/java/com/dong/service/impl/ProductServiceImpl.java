@@ -1,11 +1,13 @@
 package com.dong.service.impl;
 
 
+import com.dong.dto.mapper.ProductWithOptionMapper;
 import com.dong.dto.mapper.SpecificationMapper;
 import com.dong.dto.mapper.OptionMapper;
 import com.dong.dto.mapper.ProductMapper;
 import com.dong.dto.model.ProductDto;
 import com.dong.dto.response.ObjectResponse;
+import com.dong.dto.response.ProductWithOptionDto;
 import com.dong.entity.Category;
 import com.dong.entity.Product;
 import com.dong.entity.ProductOption;
@@ -37,6 +39,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
     private OptionMapper optionMapper;
     private SpecificationMapper specificationMapper;
+    private ProductWithOptionMapper productWithOptionMapper;
+
     @Override
     public ProductDto createProduct(ProductDto productDto) {
         Product newProduct = productMapper.mapToEntity(productDto);
@@ -159,5 +163,16 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(Long productId) {
         Product product = this.productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
         this.productRepository.delete(product);
+    }
+
+    @Override
+    public ProductWithOptionDto getProductByProductOptionId(long productOptionId) {
+        ProductOption option = this.optionRepository.findById(productOptionId).orElseThrow(() -> new ResourceNotFoundException("Option", "id", productOptionId));
+
+        ProductWithOptionDto product = new ProductWithOptionDto();
+        product = this.productWithOptionMapper.mapToProductOptionDto(option.getProduct());
+        product.setOption(this.optionMapper.mapToDto(option));
+        return product;
+
     }
 }
