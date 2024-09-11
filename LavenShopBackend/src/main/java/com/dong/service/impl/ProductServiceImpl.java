@@ -1,13 +1,12 @@
 package com.dong.service.impl;
 
 
-import com.dong.dto.mapper.ProductWithOptionMapper;
-import com.dong.dto.mapper.SpecificationMapper;
-import com.dong.dto.mapper.OptionMapper;
-import com.dong.dto.mapper.ProductMapper;
+import com.dong.dto.mapper.*;
 import com.dong.dto.model.ProductDto;
+import com.dong.dto.model.ProductOptionDto;
 import com.dong.dto.response.ObjectResponse;
 import com.dong.dto.response.ProductWithOptionDto;
+import com.dong.dto.response.ProductWithOptionForCartDto;
 import com.dong.entity.Category;
 import com.dong.entity.Product;
 import com.dong.entity.ProductOption;
@@ -35,37 +34,34 @@ public class ProductServiceImpl implements ProductService {
     private ProductOptionRepository optionRepository;
     private ProductSpecificationRepository specificationRepository;
     private CategoryRepository categoryRepository;
+
     //Mappers
     private ProductMapper productMapper;
     private OptionMapper optionMapper;
     private SpecificationMapper specificationMapper;
-    private ProductWithOptionMapper productWithOptionMapper;
+    private ProductWithOptionForCartMapper productWithOptionMapper;
 
     @Override
     public ProductDto createProduct(ProductDto productDto) {
         Product newProduct = productMapper.mapToEntity(productDto);
-        // Kiểm tra xem có category slug chưa, nếu chưa thì bỏ qua (uncategorized)
-        //, nếu có rồi thì tự động convert sang slug (nếu là slug sẵn thì k thay đổi)
-        // Sau đó sẽ gọi hàm và tìm dưới db và gán cho product
         if(!newProduct.getCategoryUrl().equals("")){
             String categoryUrl = SlugConvert.convert(newProduct.getCategoryUrl());
             Category category = this.categoryRepository.findByUrlKey(categoryUrl);
             newProduct.setCategory(category);
         }
-        // Convert tu dong ten sp sang slug, khong yeu cau phai co slug trong request body
         String productSlug = SlugConvert.convert(productDto.getName());
         newProduct.setProductSlug(productSlug);
-        // Gán các option vào product
-        Set<ProductOption> options = newProduct.getOptions();
+        Set<ProductOption> options = new HashSet<>(newProduct.getOptions());
         for(ProductOption option : options){
             newProduct.addOption(option);
         }
-        // Gán các specification vào product
         Set<ProductSpecification> specifications = newProduct.getSpecifications();
         for(ProductSpecification specification : specifications){
             newProduct.addSpecification(specification);
         }
+
         Product productResponse = this.productRepository.save(newProduct);
+
         return productMapper.mapToDto(productResponse);
     }
 
@@ -75,12 +71,20 @@ public class ProductServiceImpl implements ProductService {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
+
         // Tao 1 pageable instance
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
         // Tao 1 mang cac trang product su dung find all voi tham so la pageable
         Page<Product> pages = this.productRepository.findAll(pageable);
+
         // Lay ra gia tri (content) cua page
         List<Product> products = pages.getContent();
+
+        for(Product product : products){
+
+        }
+
         // Ep kieu sang dto
         List<ProductDto> content = products.stream().map(product -> productMapper.mapToDto(product)).collect(Collectors.toList());
 
@@ -98,12 +102,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getProductById(Long id) {
         Product product = this.productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+
         ProductDto productDto = productMapper.mapToDto(product);
+
         return productDto;
     }
+
     @Override
     public ProductDto updateProduct(ProductDto productDto, Long productId) {
-        Product product = this.productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        Product product = this.productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+
         product.setName(productDto.getName());
         product.setBrand(productDto.getBrand());
         product.setDescription(productDto.getDescription());
@@ -115,50 +124,43 @@ public class ProductServiceImpl implements ProductService {
         product.setThumbnailUrl(productDto.getThumbnailUrl());
         product.setCategoryUrl(productDto.getCategoryUrl());
         product.setProductSlug(SlugConvert.convert(product.getName()));
-        if(!product.getCategoryUrl().equals("")){
-            String categoryUrl = SlugConvert.convert(product.getCategoryUrl());
-            Category category = this.categoryRepository.findByUrlKey(categoryUrl);
-            product.setCategory(category);
-        }
-        // Xu ly logic cho update option
-        //1. Lay het tat ca option tu product update
-        Set<ProductOption> options = productDto.getOptions().stream().map(option -> optionMapper.mapToEntity(option)).collect(Collectors.toSet());
-        //2. Lay het tat ca option tu product hien tai (Su dung cach copy de khong tham chieu toi Set goc)
-        Set<ProductOption> productOptions = new HashSet<>(product.getOptions());
-        //3. Duyet qua tat ca option cua product hien tai,
-        // neu ko nam trong Set option cua product update thi se bi xoa di
-        for(ProductOption option : productOptions){
-            boolean isContain = options.contains(option);
-            // Ham dismissOption su dung de ngat bo lien ket (xoa khoi product truoc)
-            // Can phai ngat lien ket voi Product truoc (do bidirectional relationship), sau do moi
-            // xoa trong database
-            if(!isContain && product.dismissOption(option)){
-                ProductOption deletedOption = this.optionRepository.findById(option.getId()).orElseThrow(() -> new ResourceNotFoundException("Option", "id", option.getId()));
-                this.optionRepository.delete(deletedOption);
-            }
-        }
-        //3. Cuoi cung la thuc hien logic update (Neu chua co thi se dc them,
-        // con neu da co (cung name) thi se dc thay doi value)
-        for(ProductOption option : options){
+
+        // Xóa các options cũ
+        product.setOptions(new HashSet<>());
+
+        // Xử lý các options mới
+        List<ProductOption> options = productDto.getOptions()
+                .stream()
+                .map(option -> {
+                    // Sử dụng merge để chắc chắn rằng các đối tượng ProductOption nằm trong context
+                    ProductOption managedOption = optionRepository.findById(option.getId())
+                            .orElseThrow(() -> new ResourceNotFoundException("ProductOption", "id", option.getId()));
+                    managedOption.setName(option.getName());
+                    managedOption.setValue(option.getValue());
+                    return managedOption;
+                })
+                .collect(Collectors.toList());
+
+        // Cập nhật các option vào product
+        for (ProductOption option : options) {
             product.updateOption(option);
         }
-        // Xy ly tuong tu cho product specification
-        Set<ProductSpecification> specifications = productDto.getSpecifications().stream().map(specification -> specificationMapper.mapToEntity(specification)).collect(Collectors.toSet());
-        Set<ProductSpecification> productSpecifications = new HashSet<>(product.getSpecifications());
-        for(ProductSpecification specification : productSpecifications){
-            boolean isContain = specifications.contains(specification);
-            // Ham dismissSpecification su dung de ngat bo lien ket (xoa khoi product truoc)
-            if(!isContain && product.dismissSpecification(specification)){
-                ProductSpecification deletedSpecification = this.specificationRepository.findById(Long.valueOf(specification.getId())).orElseThrow(() -> new ResourceNotFoundException("Specification", "id", specification.getId()));
-                this.specificationRepository.delete(deletedSpecification);
-            }
-        }
-        for(ProductSpecification specification : specifications){
-            product.updateSpecification(specification);
-        }
-        this.productRepository.save(product);
-        return productMapper.mapToDto(product);
+
+        // Xử lý tương tự cho specifications
+        Set<ProductSpecification> specifications = productDto.getSpecifications().stream()
+                .map(specificationMapper::mapToEntity)
+                .collect(Collectors.toSet());
+
+        // Cập nhật specifications cho product
+        product.setSpecifications(specifications);
+
+        // Lưu product
+        Product updatedProduct = productRepository.save(product);
+
+        return productMapper.mapToDto(updatedProduct);
     }
+
+
     @Override
     public void deleteProduct(Long productId) {
         Product product = this.productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
@@ -166,13 +168,23 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductWithOptionDto getProductByProductOptionId(long productOptionId) {
-        ProductOption option = this.optionRepository.findById(productOptionId).orElseThrow(() -> new ResourceNotFoundException("Option", "id", productOptionId));
+    public ProductWithOptionForCartDto getProductByProductOptionId(String productOptionIds){
 
-        ProductWithOptionDto product = new ProductWithOptionDto();
-        product = this.productWithOptionMapper.mapToProductOptionDto(option.getProduct());
-        product.setOption(this.optionMapper.mapToDto(option));
-        return product;
+        String[] ids = productOptionIds.split(",");
 
+        ProductOption firstOption = this.optionRepository.findById(Long.valueOf(ids[0]).longValue()).get();
+        Product product = firstOption.getProduct();
+
+        List<ProductOptionDto> optionDtoList = new ArrayList<>();
+
+        for(String productOptionId : ids){
+            ProductOptionDto option = optionMapper.mapToDto(this.optionRepository.findById(Long.valueOf(productOptionId).longValue()).get());
+            optionDtoList.add(option);
+        }
+
+        ProductWithOptionForCartDto productWithOptionForCartDto;
+        productWithOptionForCartDto = this.productWithOptionMapper.mapToProductOptionDto(product);
+        productWithOptionForCartDto.setOption(optionDtoList);
+        return productWithOptionForCartDto;
     }
 }
