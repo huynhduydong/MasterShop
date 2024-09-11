@@ -3,6 +3,7 @@ package com.dong.service;
 import com.dong.dto.model.ProductDto;
 import com.dong.dto.response.ObjectResponse;
 import com.dong.dto.response.ProductResponse;
+import com.dong.dto.response.ProductWithOptionDto;
 
 public interface ProductService {
 
@@ -11,4 +12,6 @@ public interface ProductService {
     ProductDto getProductById(Long id);
     ProductDto updateProduct(ProductDto productDto, Long productId);
     void deleteProduct(Long productId);
+    ProductWithOptionDto getProductByProductOptionId(long productOptionId);
+
 }
