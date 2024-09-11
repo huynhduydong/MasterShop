@@ -27,14 +27,35 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
     @Override
     public void addProductToCart(String userId, CartItemRequest item) {
         String key = "cart:user-" + userId;
-        String fieldKey;
+
+        // Tao 1 stringbuilder de noi chuoi voi hieu nang tot hon la cong string
+        StringBuilder fieldKeyBuilder;
         int updateQuantity;
 
+        // Kiem tra xem product co option ko
         if(Objects.nonNull(item.getProductItemId())){
-            fieldKey = "product_item:" + item.getProductItemId();
+
+            fieldKeyBuilder = new StringBuilder("product_item:");
+
+            // Bien boolean de chi ra phan tu dau tien, khong can them dau "," phia truoc
+            // Ham for dung de ghep cac optionId lai thanh 1 chuoi co dang "5,10,12"
+            boolean isFirst = true;
+            for (Long optionId : item.getProductItemId()) {
+                if (!isFirst) {
+                    fieldKeyBuilder.append(",");
+                } else {
+                    isFirst = false;
+                }
+                fieldKeyBuilder.append(optionId);
+            }
+
         } else {
-            fieldKey = "product:" + item.getProductId();
+            fieldKeyBuilder = new StringBuilder("product:");
+            fieldKeyBuilder.append(item.getProductId());
         }
+
+        // Ep kieu ve lai String de thao tac
+        String fieldKey = fieldKeyBuilder.toString();
 
         if (this.hashExist(userId, fieldKey)) {
             updateQuantity = (Integer) this.hashGet(userId, fieldKey) + item.getQuantity();
