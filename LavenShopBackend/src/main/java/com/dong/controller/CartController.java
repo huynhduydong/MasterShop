@@ -1,20 +1,18 @@
 package com.dong.controller;
 
 
-import com.dong.dto.model.ProductDto;
+import com.dong.dto.model.ProductInCartDto;
 import com.dong.dto.request.CartItemRequest;
 import com.dong.dto.request.ProductCartDeletionRequest;
 import com.dong.dto.request.UpdateCartRequest;
 import com.dong.service.CartRedisService;
 import com.dong.utils.CustomHeaders;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -24,7 +22,7 @@ public class CartController {
     private  CartRedisService cartRedisService;
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getProductsFromCart(@RequestHeader(CustomHeaders.X_AUTH_USER_ID) String userId){
+    public ResponseEntity<List<ProductInCartDto>> getProductsFromCart(@RequestHeader(CustomHeaders.X_AUTH_USER_ID) String userId){
         return new ResponseEntity<>(this.cartRedisService.getProductsFromCart(userId), HttpStatus.OK);
     }
 

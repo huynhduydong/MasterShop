@@ -1,7 +1,7 @@
 package com.dong.service.impl;
 
 
-import com.dong.dto.model.ProductDto;
+import com.dong.dto.model.ProductInCartDto;
 import com.dong.dto.request.CartItemRequest;
 import com.dong.dto.request.ProductCartDeletionRequest;
 import com.dong.dto.request.UpdateCartRequest;
@@ -69,10 +69,10 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
     }
 
     @Override
-    public List<ProductDto> getProductsFromCart(String userId) {
+    public List<ProductInCartDto> getProductsFromCart(String userId) {
         Map<String, Object> products = this.getField("cart:user-" + userId);
 
-        List<ProductDto> productList = new ArrayList<>();
+        List<ProductInCartDto> productList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : products.entrySet()) {
             // Tao 1 bien co hieu de danh dau xem id nay la cua product hay product_item
             boolean isProductItem;
@@ -84,7 +84,7 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
             //Neu la product thi bien co hieu la false, nguoc lai la true
             isProductItem = arrKey[0].equals("product_item");
 
-            ProductDto productDto = getProductById(arrKey[1], isProductItem); // Gọi đến URL để lấy thông tin sản phẩm dua tren id
+            ProductInCartDto productDto = getProductById(arrKey[1], isProductItem); // Gọi đến URL để lấy thông tin sản phẩm dua tren id
             if (productDto != null) {
                 productList.add(productDto);
             }
@@ -92,21 +92,21 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
         return productList;
     }
 
-    private ProductDto getProductById(String id, boolean isProductItem) {
+    private ProductInCartDto getProductById(String id, boolean isProductItem) {
         // Kiem tra, neu la product_item thi goi toi duong dan lay product dua tren optionId,
         // nguoc lai se la goi product theo id nhu bth
-        ProductDto productDto;
+        ProductInCartDto productDto;
         if(isProductItem){
             productDto = this.webClient.get()
-                    .uri("http://localhost:8081/api/v1/products/product-options/" + id)
+                    .uri("http://localhost:8080/api/v1/products/product-options/" + id)
                     .retrieve()
-                    .bodyToMono(ProductDto.class)
+                    .bodyToMono(ProductInCartDto.class)
                     .block();
         } else {
             productDto = this.webClient.get()
-                    .uri("http://localhost:8081/api/v1/products/" + id)
+                    .uri("http://localhost:8080/api/v1/products/" + id)
                     .retrieve()
-                    .bodyToMono(ProductDto.class)
+                    .bodyToMono(ProductInCartDto.class)
                     .block();
         }
 
