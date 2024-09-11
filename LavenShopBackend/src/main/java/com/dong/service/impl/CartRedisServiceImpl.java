@@ -115,6 +115,11 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
         return productList;
     }
 
+    @Override
+    public void deleteAllProductsInCart(String userId) {
+        this.delete("cart:user-" + userId);
+    }
+
     private ProductInCartDto getProductById(String id, boolean isProductItem) {
         // Kiem tra, neu la product_item thi goi toi duong dan lay product dua tren optionId,
         // nguoc lai se la goi product theo id nhu bth

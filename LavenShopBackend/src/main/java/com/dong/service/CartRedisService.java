@@ -13,4 +13,5 @@ public interface CartRedisService extends BaseRedisService {
     void updateProductInCart(String userId, UpdateCartRequest items);
     void deleteProductInCart(String userId, ProductCartDeletionRequest request);
     List<ProductInCartDto> getProductsFromCart(String userId);
+    void deleteAllProductsInCart(String userId);
 }
