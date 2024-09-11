@@ -2,6 +2,7 @@ package com.dong.dto.model;
 
 import lombok.Data;
 @Data
+
 public class ProductInCartDto {
     private Long id;
     private String name;
@@ -9,4 +10,5 @@ public class ProductInCartDto {
     private double discountRate;
     private String thumbnailUrl;
     private ProductOptionDto option;
+    private int quantity;
 }

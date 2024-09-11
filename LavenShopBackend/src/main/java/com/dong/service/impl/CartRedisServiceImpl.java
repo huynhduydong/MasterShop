@@ -70,8 +70,8 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
 
     @Override
     public List<ProductInCartDto> getProductsFromCart(String userId) {
-        Map<String, Object> products = this.getField("cart:user-" + userId);
-
+        String key = "cart:user-" + userId;
+        Map<String, Object> products = this.getField(key);
         List<ProductInCartDto> productList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : products.entrySet()) {
             // Tao 1 bien co hieu de danh dau xem id nay la cua product hay product_item
@@ -86,6 +86,8 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
 
             ProductInCartDto productDto = getProductById(arrKey[1], isProductItem); // Gọi đến URL để lấy thông tin sản phẩm dua tren id
             if (productDto != null) {
+                int quantity = (int)this.hashGet(key, entry.getKey());
+                productDto.setQuantity(quantity);
                 productList.add(productDto);
             }
         }
