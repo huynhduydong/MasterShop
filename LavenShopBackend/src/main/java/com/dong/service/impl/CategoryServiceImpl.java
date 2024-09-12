@@ -74,7 +74,7 @@ public class CategoryServiceImpl implements CategoryService {
         response.setPageNo(pages.getNumber());
         response.setPageSize(pages.getSize());
         response.setLast(pages.isLast());
-
+        response.setTotalPages(pages.getTotalPages());
         return response;
     }
 
@@ -98,5 +98,36 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = this.categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
         this.categoryRepository.delete(category);
+    }
+
+    @Override
+    public ObjectResponse<CategoryResponseDto> searchCategory(String name, int pageNo, int pageSize, String sortBy, String sortDir) {
+        // Tao sort
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        // Tao 1 pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        // Tao 1 mang cac trang product su dung find all voi tham so la pageable
+        Page<Category> pages = this.categoryRepository.searchCategoriesByName(name, pageable);
+
+        // Lay ra gia tri (content) cua page
+        List<Category> categories = pages.getContent();
+
+
+        // Ep kieu sang dto
+        List<CategoryResponseDto> content = categories.stream().map(category -> categoryMapper.mapToResponseDto(category)).collect(Collectors.toList());
+
+        // Gan gia tri (content) cua page vao ProductResponse de tra ve
+        ObjectResponse<CategoryResponseDto> response = new ObjectResponse();
+        response.setContent(content);
+        response.setTotalElements(pages.getTotalElements());
+        response.setPageNo(pages.getNumber());
+        response.setPageSize(pages.getSize());
+        response.setLast(pages.isLast());
+        response.setTotalPages(pages.getTotalPages());
+        return response;
     }
 }

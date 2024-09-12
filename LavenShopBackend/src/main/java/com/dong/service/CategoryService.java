@@ -14,4 +14,5 @@ public interface CategoryService {
     ObjectResponse<CategoryResponseDto> getAllCategories(int pageNo, int pageSize, String sortBy, String sortDir);
     CategoryDto updateCategory(CreateCategoryDto categoryDto, Long id);
     void deleteCategory(Long id);
+    ObjectResponse<CategoryResponseDto> searchCategory(String name, int pageNo, int pageSize, String sortBy, String sortDir);
 }
