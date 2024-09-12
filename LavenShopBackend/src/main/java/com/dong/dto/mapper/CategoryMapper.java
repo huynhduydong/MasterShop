@@ -1,6 +1,7 @@
 package com.dong.dto.mapper;
 
 import com.dong.dto.model.CategoryDto;
+import com.dong.dto.response.CategoryResponseDto;
 import com.dong.entity.Category;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,6 +18,15 @@ public class CategoryMapper {
 
     public Category mapToEntity(CategoryDto categoryDto){
         Category category = mapper.map(categoryDto, Category.class);
+        return category;
+    }
+    public CategoryResponseDto mapToResponseDto(Category category){
+        CategoryResponseDto categoryResponseDto = mapper.map(category, CategoryResponseDto.class);
+        return categoryResponseDto;
+    }
+
+    public Category mapToResponseEntity(CategoryResponseDto categoryResponseDto){
+        Category category = mapper.map(categoryResponseDto, Category.class);
         return category;
     }
 }

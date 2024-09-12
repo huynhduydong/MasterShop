@@ -112,6 +112,7 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
                 productList.add(productDto);
             }
         }
+        productList.sort(Comparator.comparing(ProductInCartDto::getId));
         return productList;
     }
 

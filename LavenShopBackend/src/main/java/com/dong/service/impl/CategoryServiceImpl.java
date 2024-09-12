@@ -5,6 +5,7 @@ import com.dong.dto.mapper.CategoryMapper;
 import com.dong.dto.mapper.CreateCategoryMapper;
 import com.dong.dto.model.CategoryDto;
 import com.dong.dto.model.CreateCategoryDto;
+import com.dong.dto.response.CategoryResponseDto;
 import com.dong.entity.Category;
 import com.dong.exception.ResourceNotFoundException;
 import com.dong.repositories.CategoryRepository;
@@ -42,11 +43,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDto> getAllCategories() {
+    public List<CategoryResponseDto> getAllCategories() {
         List<Category> categories = this.categoryRepository.findAll();
 
-        return categories.stream().map(category -> this.categoryMapper.mapToDto(category)).collect(Collectors.toList());
-    }
+        return categories.stream().map(category -> this.categoryMapper.mapToResponseDto(category)).collect(Collectors.toList());    }
 
     @Override
     public CategoryDto updateCategory(CreateCategoryDto categoryDto, Long id) {
@@ -54,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         category.setName(categoryDto.getName());
         category.setThumbnailUrl(categoryDto.getThumbnailUrl());
-        category.setPrimary(categoryDto.isPrimary());
+//        category.setPrimary(categoryDto.isPrimary());
         category.setParentId(categoryDto.getParentId());
         category.setUrlKey(SlugConvert.convert(categoryDto.getName()));
 

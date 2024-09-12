@@ -25,7 +25,7 @@ public class Category {
 
     private String thumbnailUrl;
     private Long parentId;
-    private boolean isPrimary;
+//    private boolean isPrimary;
 
     @OneToMany(mappedBy = "category")
     private Set<Product> products = new HashSet<>();

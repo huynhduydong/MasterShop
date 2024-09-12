@@ -25,6 +25,7 @@ public class Order {
     private double shippingFee;
     private String note;
     private LocalDateTime createdAt;
+    private long addressId;
     private long userId;
 
 }

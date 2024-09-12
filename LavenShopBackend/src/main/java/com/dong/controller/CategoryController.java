@@ -3,6 +3,7 @@ package com.dong.controller;
 
 import com.dong.dto.model.CategoryDto;
 import com.dong.dto.model.CreateCategoryDto;
+import com.dong.dto.response.CategoryResponseDto;
 import com.dong.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getAllCategories(){
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategories(){
         return new ResponseEntity<>(this.categoryService.getAllCategories(), HttpStatus.OK);
     }
 

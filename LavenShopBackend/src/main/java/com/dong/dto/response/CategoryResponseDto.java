@@ -1,14 +1,13 @@
-package com.dong.dto.model;
+package com.dong.dto.response;
 
 import lombok.Data;
 
-import java.util.Set;
-public class CategoryDto {
+@Data
+public class CategoryResponseDto {
     private Long id;
+
     private String name;
     private String urlKey;
     private String thumbnailUrl;
     private Long parentId;
-//    private boolean isPrimary;
-    private Set<ProductDto> products;
 }
