@@ -1,6 +1,6 @@
-# MasterShop
+# LavenShop
 Link to Frontend repo: [Laven FE](https://github.com/huynhduydong/LavenFontend)
-### Description
+## Introduction
 ### Project: Laven - E-commerce Platform
 - Back-end:Built with Spring Boot, providing a scalable and secure foundation for handling API requests, business logic, and database management.
 - Front-end:Developed using Next.js for server-side rendering and React.js for building dynamic, interactive user interfaces.
@@ -8,7 +8,7 @@ Link to Frontend repo: [Laven FE](https://github.com/huynhduydong/LavenFontend)
 - Key Features: Includes product browsing, cart management, and secure checkout processes, delivering an optimized and user-friendly shopping experience.
 - Objective: To create a high-performance e-commerce platform that is scalable, maintainable, and provides a seamless experience for both users and administrators.
 
-
+## Features
 ### Technologies and Framework
 - Back-end
   - Java 17
@@ -20,7 +20,7 @@ Link to Frontend repo: [Laven FE](https://github.com/huynhduydong/LavenFontend)
   - ReactJS
   - TailwindCSS
   - RadixUI
-  - ShadcnUI
+  - ShadcnUI 
 ### Demo
 Some of the pictures of this Application
 - Front-end:
@@ -38,3 +38,26 @@ Some of the pictures of this Application
   <img src="resources/admin.png", alt="Admin product" width="600" />
   <p><i>Admin product Screen</i></p>
 </div>
+
+## Setup
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/huynhduydong/MasterShop
+   ```
+2. Navigate to the project directory:
+   ```
+   cd LavenShop
+   ```
+3. Install dependencies::
+   ```
+   npm install
+   ```
+4. Run the development server:
+   ```
+   npm run dev
+
+
+
+
+  
