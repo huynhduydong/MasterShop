@@ -4,7 +4,9 @@ package com.dong.controller;
 import com.dong.dto.model.CategoryDto;
 import com.dong.dto.model.CreateCategoryDto;
 import com.dong.dto.response.CategoryResponseDto;
+import com.dong.dto.response.ObjectResponse;
 import com.dong.service.CategoryService;
+import com.dong.utils.AppConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +27,13 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getAllCategories(){
-        return new ResponseEntity<>(this.categoryService.getAllCategories(), HttpStatus.OK);
+    public ResponseEntity<ObjectResponse<CategoryResponseDto>> getAllCategories(
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
+    ){
+        return new ResponseEntity<>(this.categoryService.getAllCategories(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
 
     @GetMapping("/{categoryId}")
