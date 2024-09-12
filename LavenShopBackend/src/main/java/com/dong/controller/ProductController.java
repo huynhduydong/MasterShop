@@ -4,6 +4,7 @@ package com.dong.controller;
 import com.dong.dto.model.ProductDto;
 
 import com.dong.dto.response.ObjectResponse;
+import com.dong.dto.response.ProductDetailResponseDto;
 import com.dong.service.ProductService;
 import com.dong.utils.AppConstants;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable(name = "productId") Long id){
+    public ResponseEntity<ProductDetailResponseDto> getProductById(@PathVariable(name = "productId") Long id){
         return new ResponseEntity<>(this.productService.getProductById(id), HttpStatus.OK);
     }
     @PutMapping("/{productId}")

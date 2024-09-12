@@ -4,9 +4,7 @@ package com.dong.service.impl;
 import com.dong.dto.mapper.*;
 import com.dong.dto.model.ProductDto;
 import com.dong.dto.model.ProductOptionDto;
-import com.dong.dto.response.ObjectResponse;
-import com.dong.dto.response.ProductWithOptionDto;
-import com.dong.dto.response.ProductWithOptionForCartDto;
+import com.dong.dto.response.*;
 import com.dong.entity.Category;
 import com.dong.entity.Product;
 import com.dong.entity.ProductOption;
@@ -40,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
     private OptionMapper optionMapper;
     private SpecificationMapper specificationMapper;
     private ProductWithOptionForCartMapper productWithOptionMapper;
-
+    private CategoryMapper categoryMapper;
     @Override
     public ProductDto createProduct(ProductDto productDto) {
         Product newProduct = productMapper.mapToEntity(productDto);
@@ -100,12 +98,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(Long id) {
+    public ProductDetailResponseDto getProductById(Long id) {
         Product product = this.productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
 
-        ProductDto productDto = productMapper.mapToDto(product);
+        Category category = this.categoryRepository.findByUrlKey(product.getCategoryUrl());
+        CategoryResponseDto categoryResponseDto = this.categoryMapper.mapToResponseDto(category);
 
-        return productDto;
+        ProductDetailResponseDto productDetailResponseDto = productMapper.mapToResponseDetailDto(product);
+        productDetailResponseDto.setCategory(categoryResponseDto);
+        return productDetailResponseDto;
     }
 
     @Override
