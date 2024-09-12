@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,4 +23,8 @@ public class UserDto {
     private String username;
 
     private String password;
+    private String phone;
+
+    private String gender;
+    private Date dateOfBirth;
 }

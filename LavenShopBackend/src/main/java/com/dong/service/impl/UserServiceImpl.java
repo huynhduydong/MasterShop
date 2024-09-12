@@ -4,9 +4,11 @@ package com.dong.service.impl;
 import com.dong.dto.mapper.UserMapper;
 import com.dong.dto.model.UserDto;
 import com.dong.dto.response.ObjectResponse;
+import com.dong.entity.Role;
 import com.dong.entity.User;
 import com.dong.exception.LavenAPIException;
 import com.dong.exception.ResourceNotFoundException;
+import com.dong.repositories.RoleRepository;
 import com.dong.repositories.UserRepository;
 import com.dong.service.UserService;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private UserMapper userMapper;
     private PasswordEncoder passwordEncoder;
-
+    private RoleRepository roleRepository;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -45,6 +49,10 @@ public class UserServiceImpl implements UserService {
         User newUser = this.userMapper.mapToEntity(userDto);
 
         newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        Set<Role> roles = new HashSet<>();
+        Role userRole = this.roleRepository.findByName("USER").get();
+        roles.add(userRole);
+        newUser.setRoles(roles);
 
         User userResponse = this.userRepository.save(newUser);
         return this.userMapper.mapToDto(userResponse);

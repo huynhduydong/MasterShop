@@ -15,6 +15,6 @@ public class AddressDto {
     private String ward;
     private String address;
     private String addressType;
-    private boolean isDefault;
+//    private boolean isDefault;
 
 }
