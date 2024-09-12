@@ -1,13 +1,13 @@
 # MasterShop
 Link to Frontend repo: [Laven FE](https://github.com/huynhduydong/LavenFontend)
 ### Description
-Project: Laven - E-commerce Platform
+### Project: Laven - E-commerce Platform
+- Back-end:Built with Spring Boot, providing a scalable and secure foundation for handling API requests, business logic, and database management.
+- Front-end:Developed using Next.js for server-side rendering and React.js for building dynamic, interactive user interfaces.
+- Styling:TailwindCSS is utilized to create a modern, responsive design with a focus on efficiency and ease of customization.
+- Key Features: Includes product browsing, cart management, and secure checkout processes, delivering an optimized and user-friendly shopping experience.
+- Objective: To create a high-performance e-commerce platform that is scalable, maintainable, and provides a seamless experience for both users and administrators.
 
-Backend: Built with Spring Boot, providing a scalable and secure foundation for handling API requests, business logic, and database management.
-Frontend: Developed using Next.js for server-side rendering and React.js for building dynamic, interactive user interfaces.
-Styling: TailwindCSS is utilized to create a modern, responsive design with a focus on efficiency and ease of customization.
-Key Features: Includes product browsing, cart management, and secure checkout processes, delivering an optimized and user-friendly shopping experience.
-Objective: To create a high-performance e-commerce platform that is scalable, maintainable, and provides a seamless experience for both users and administrators.
 
 ### Technologies and Framework
 - Back-end
