@@ -4,6 +4,7 @@ import com.dong.dto.model.UserDto;
 import com.dong.dto.response.ObjectResponse;
 import com.dong.service.UserService;
 import com.dong.utils.AppConstants;
+import com.dong.utils.CustomHeaders;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +49,8 @@ public class UserController {
 
         return new ResponseEntity<>("Delete user successfully!", HttpStatus.OK);
     }
-
+    @GetMapping("/profile")
+    public ResponseEntity<UserDto> getUserProfile(@RequestHeader(CustomHeaders.X_AUTH_USER_ID) Long id){
+        return new ResponseEntity<>(this.userService.getUserProfile(id), HttpStatus.OK);
+    }
 }
