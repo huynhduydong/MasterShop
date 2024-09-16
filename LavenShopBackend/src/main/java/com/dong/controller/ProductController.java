@@ -5,6 +5,7 @@ import com.dong.dto.model.ProductDto;
 
 import com.dong.dto.response.ObjectResponse;
 import com.dong.dto.response.ProductDetailResponseDto;
+import com.dong.dto.response.ProductWithOptionForCartDto;
 import com.dong.service.ProductService;
 import com.dong.utils.AppConstants;
 import lombok.AllArgsConstructor;
@@ -61,6 +62,12 @@ public class ProductController {
             @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
     ){
         return new ResponseEntity<>(this.productService.searchProduct(name, pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
+    }
+    @PostMapping("/product-options")
+    public ResponseEntity<ProductWithOptionForCartDto> findProductByProductOptionId(
+            @RequestBody String idLists
+    ){
+        return new ResponseEntity<>(this.productService.getProductByProductOptionId(idLists), HttpStatus.OK);
     }
 }
 

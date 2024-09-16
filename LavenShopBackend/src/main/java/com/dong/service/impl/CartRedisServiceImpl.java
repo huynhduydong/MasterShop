@@ -5,6 +5,7 @@ import com.dong.dto.model.ProductInCartDto;
 import com.dong.dto.request.CartItemRequest;
 import com.dong.dto.request.ProductCartDeletionRequest;
 import com.dong.dto.request.UpdateCartRequest;
+import com.dong.dto.response.ProductWithOptionForCartDto;
 import com.dong.exception.ResourceNotFoundException;
 import com.dong.service.CartRedisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,59 +89,71 @@ public class CartRedisServiceImpl extends BaseRedisServiceImpl implements CartRe
 
         }
     }
-
-    @Override
     public List<ProductInCartDto> getProductsFromCart(String userId) {
         String key = "cart:user-" + userId;
         Map<String, Object> products = this.getField(key);
         List<ProductInCartDto> productList = new ArrayList<>();
+
         for (Map.Entry<String, Object> entry : products.entrySet()) {
-            // Tao 1 bien co hieu de danh dau xem id nay la cua product hay product_item
-            boolean isProductItem;
+            boolean isProductItem = entry.getKey().startsWith("product_item");
+            Object productObj = getProductById(entry.getKey().split(":")[1], isProductItem);
 
-            //Dau tien la lay key ra roi sau do split bang dau ":"
-            //vi dinh dang du lieu se la product:1 hoac product_item:1 (dua tren san pham do co option hay ko)
-            String[] arrKey = entry.getKey().split(":");
+            ProductInCartDto productDto = null;
+            if (productObj instanceof ProductWithOptionForCartDto) {
+                ProductWithOptionForCartDto productWithOption = (ProductWithOptionForCartDto) productObj;
+                productDto = new ProductInCartDto();
 
-            //Neu la product thi bien co hieu la false, nguoc lai la true
-            isProductItem = arrKey[0].equals("product_item");
+                // Ánh xạ đầy đủ các thuộc tính từ ProductWithOptionForCartDto sang ProductInCartDto
+                productDto.setId(productWithOption.getId());
+                productDto.setName(productWithOption.getName());
+                productDto.setBrand(productWithOption.getBrand());
+                productDto.setPrice(productWithOption.getPrice());
+                productDto.setDiscountRate(productWithOption.getDiscountRate());
+                productDto.setThumbnailUrl(productWithOption.getThumbnailUrl());
+                if (productWithOption.getOption() != null && !productWithOption.getOption().isEmpty()) {
+                    productDto.setOption(productWithOption.getOption().get(0));  // Lấy phần tử đầu tiên
+                } else {
+                    productDto.setOption(null);  // Nếu không có option
+                }
+            } else if (productObj instanceof ProductInCartDto) {
+                productDto = (ProductInCartDto) productObj;
+            }
 
-            ProductInCartDto productDto = getProductById(arrKey[1], isProductItem); // Gọi đến URL để lấy thông tin sản phẩm dua tren id
             if (productDto != null) {
-                int quantity = (int)this.hashGet(key, entry.getKey());
+                int quantity = (int) this.hashGet(key, entry.getKey());
                 productDto.setQuantity(quantity);
                 productList.add(productDto);
             }
         }
+
         productList.sort(Comparator.comparing(ProductInCartDto::getId));
         return productList;
     }
+
 
     @Override
     public void deleteAllProductsInCart(String userId) {
         this.delete("cart:user-" + userId);
     }
-
-    private ProductInCartDto getProductById(String id, boolean isProductItem) {
-        // Kiem tra, neu la product_item thi goi toi duong dan lay product dua tren optionId,
-        // nguoc lai se la goi product theo id nhu bth
-        ProductInCartDto productDto;
-        if(isProductItem){
-            productDto = this.webClient.get()
-                    .uri("http://localhost:8080/api/v1/products/product-options/" + id)
+    private Object getProductById(String id, boolean isProductItem) {
+        if (isProductItem) {
+            // Trường hợp là product_item, trả về ProductWithOptionForCartDto
+            return this.webClient.post()
+                    .uri("http://localhost:8080/api/v1/products/product-options")
+                    .bodyValue(id)
                     .retrieve()
-                    .bodyToMono(ProductInCartDto.class)
+                    .bodyToMono(ProductWithOptionForCartDto.class)  // Trả về ProductWithOptionForCartDto
                     .block();
         } else {
-            productDto = this.webClient.get()
+            // Trường hợp là product, trả về ProductInCartDto
+            return this.webClient.get()
                     .uri("http://localhost:8080/api/v1/products/" + id)
                     .retrieve()
                     .bodyToMono(ProductInCartDto.class)
                     .block();
         }
-
-        return productDto;
     }
+
 
     private void checkFieldKeyExist(String key, String keyField){
         if(!this.hashExist(key, keyField)){

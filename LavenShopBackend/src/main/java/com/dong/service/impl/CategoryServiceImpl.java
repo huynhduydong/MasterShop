@@ -44,8 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto getCategoryById(Long id) {
         Category category = this.categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
-        CategoryDto categoryDto = this.categoryMapper.mapToDto(category);
-        return categoryDto;
+        return this.categoryMapper.mapToDto(category);
     }
 
     public ObjectResponse<CategoryResponseDto> getAllCategories(int pageNo, int pageSize, String sortBy, String sortDir) {
