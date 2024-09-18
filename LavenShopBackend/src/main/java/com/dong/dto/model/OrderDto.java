@@ -14,6 +14,8 @@ public class OrderDto {
     private double shippingFee;
     private String note;
     private LocalDateTime createdAt;
-    private AddressInOrderDto address;
+    private long addressId;
+    private long userId;
+    private String paypalId;
 
 }
