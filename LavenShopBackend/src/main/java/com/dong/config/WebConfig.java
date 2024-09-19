@@ -17,10 +17,10 @@ public class WebConfig implements WebMvcConfigurer {
         return new ModelMapper();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
     @Bean
     public WebClient webClient(){
         return WebClient.builder().build();
