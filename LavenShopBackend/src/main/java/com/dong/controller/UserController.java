@@ -8,12 +8,15 @@ import com.dong.utils.CustomHeaders;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @AllArgsConstructor
+@CrossOrigin
 public class UserController {
     private UserService userService;
     @PostMapping
@@ -50,7 +53,9 @@ public class UserController {
         return new ResponseEntity<>("Delete user successfully!", HttpStatus.OK);
     }
     @GetMapping("/profile")
-    public ResponseEntity<UserDto> getUserProfile(@RequestHeader(CustomHeaders.X_AUTH_USER_ID) Long id){
+    public ResponseEntity<UserDto> getUserProfile(@AuthenticationPrincipal Jwt principal){
+        Long id = principal.getClaim("id");
+
         return new ResponseEntity<>(this.userService.getUserProfile(id), HttpStatus.OK);
     }
     @GetMapping("/search")

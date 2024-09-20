@@ -7,6 +7,8 @@ import com.dong.utils.CustomHeaders;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,13 +20,17 @@ public class AddressController {
     AddressService addressService;
 
     @GetMapping("/create")
-    public ResponseEntity<AddressDto> createAddress(@RequestHeader(CustomHeaders.X_AUTH_USER_ID) long userId,
+    public ResponseEntity<AddressDto> createAddress(@AuthenticationPrincipal Jwt principal,
                                                     @RequestBody AddressDto addressDto){
+        long userId = principal.getClaim("id");
+
         return new ResponseEntity<>(addressService.createAddress(userId, addressDto), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<AddressDto>> getAllAddressByUserId(@RequestHeader(CustomHeaders.X_AUTH_USER_ID) long userId){
+    public ResponseEntity<List<AddressDto>> getAllAddressByUserId(@AuthenticationPrincipal Jwt principal){
+        long userId = principal.getClaim("id");
+
         return new ResponseEntity<>(addressService.getAddressByUserId(userId), HttpStatus.OK);
     }
 
@@ -34,9 +40,11 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AddressDto> updateAddress(@RequestHeader(CustomHeaders.X_AUTH_USER_ID) long userId,
+    public ResponseEntity<AddressDto> updateAddress(@AuthenticationPrincipal Jwt principal,
                                                     @PathVariable(name = "id") long id,
                                                     @RequestBody AddressDto addressDto) {
+        long userId = principal.getClaim("id");
+
         return new ResponseEntity<>(addressService.updateAddress(userId, addressDto, id), HttpStatus.OK);
     }
 
