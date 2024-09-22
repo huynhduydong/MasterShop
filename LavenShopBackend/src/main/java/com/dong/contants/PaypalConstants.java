@@ -3,6 +3,6 @@ package com.dong.contants;
 public interface PaypalConstants {
 
     String BASE_URI = "https://api-m.sandbox.paypal.com";
-    String CLIENT_ID  = "ASViZj3VChGkol3QG1RfeBT1R11y1wies-IXaBtVSdKWu9vc5mU1tzBxWQuSkkrsvX9gRb4FI9ZXWTR3";
-    String CLENT_SECRET = "EJsVisLY654yUhiqBJdxsK-p92HMA6Q-lXhRqEk2sAVugXDSBSO8S7KtVjjS3-V47vfsk-8PvJynbhKp";
+    String CLIENT_ID  = "AQo4I8StB0GmgmYPblkBimZwv1FZRbQQGC7GNZZovLk95MRq5qjE9smHkYtFmt9zq1IFsAVKOdawIkzR";
+    String CLENT_SECRET = "EJMvTsSACoBaZm2tsH9oorb3Hyi2gvfsFuUNZ02GBKHt97GAXhKe2OljOEPhysiH0AK3rfWVxoMhcg7R";
 }

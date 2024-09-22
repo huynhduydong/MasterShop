@@ -6,12 +6,13 @@ import com.dong.dto.response.ListOrderDto;
 import com.dong.dto.response.OrderBasicInfoDto;
 import com.dong.service.OrderService;
 import com.dong.utils.AppConstants;
-import com.dong.utils.CustomHeaders;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,8 +26,9 @@ public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     @PostMapping
-    public ResponseEntity<CreateOrderResultDto> createOrder(@RequestHeader(CustomHeaders.X_AUTH_USER_ID) long userId,
+    public ResponseEntity<CreateOrderResultDto> createOrder(@AuthenticationPrincipal Jwt principal,
                                                             @RequestBody OrderBasicInfoDto orderBasicInfoDto) {
+        long userId = principal.getClaim("id");
         logger.info("Example log from {}", OrderController.class.getSimpleName());
         return new ResponseEntity<>(orderService.createOrder(userId, orderBasicInfoDto), HttpStatus.OK);
     }

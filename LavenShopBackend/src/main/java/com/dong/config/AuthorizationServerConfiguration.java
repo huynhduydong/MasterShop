@@ -95,6 +95,11 @@ public class AuthorizationServerConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/notifications/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/products/product-options/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/v1/carts/order-cart**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/api/v1/order").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/api/v1/order/paypal_capture/**").permitAll()
+
 
                         // Phân quyền cho các thao tác với user chỉ dành cho admin
                         .requestMatchers(HttpMethod.GET, "/api/v1/users").hasAuthority("SCOPE_ADMIN")
@@ -136,6 +141,7 @@ public class AuthorizationServerConfiguration {
                 .deviceAuthorizationEndpoint("/oauth2/v1/device_authorization")
                 .deviceVerificationEndpoint("/oauth2/v1/device_verification")
                 .tokenEndpoint("/api/oauth2/v1/token")
+                .tokenIntrospectionEndpoint("/oauth2/v1/introspect")
                 .tokenIntrospectionEndpoint("/oauth2/v1/introspect")
                 .tokenRevocationEndpoint("/oauth2/v1/revoke")
                 .jwkSetEndpoint("/oauth2/v1/jwks")

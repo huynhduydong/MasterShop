@@ -12,18 +12,14 @@ import com.dong.exception.PaypalAccessTokenException;
 import com.dong.exception.ResourceNotFoundException;
 import com.dong.repositories.OrderRepository;
 import com.dong.service.OrderService;
-import com.dong.utils.CustomHeaders;
 import lombok.AllArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.json.JSONObject;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -32,6 +28,7 @@ import reactor.core.publisher.Mono;
 
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,11 +44,15 @@ public class OrderServiceImpl implements OrderService {
     public CreateOrderResultDto createOrder(long userId, OrderBasicInfoDto orderBasicInfoDto) {
 
         List<ProductInOrderDto> listProductInCart = webClient.get()
-                .uri("http://localhost:8080/api/v1/carts")
-                .header(CustomHeaders.X_AUTH_USER_ID, String.valueOf(userId))
+                .uri("http://localhost:8080/api/v1/carts/order-cart?userId=" + userId)
                 .retrieve()
                 .bodyToFlux(ProductInOrderDto.class)
-                .collectList().block();
+                .collectList()
+                .onErrorResume(e -> {
+                    return Mono.just(Collections.emptyList());
+                })
+                .block();
+
 
         Order order = new Order();
         CreateOrderResultDto cord = new CreateOrderResultDto();
