@@ -24,8 +24,6 @@ public class ProductOption {
     @Column(unique = false)
     private String name;
     private String value;
-//    @ElementCollection
-//    private List<String> value;
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "product_id", nullable = false)

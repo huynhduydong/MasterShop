@@ -47,25 +47,18 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+//    private List<ProductOption> options = new ArrayList<>();
     private List<ProductOption> options = new ArrayList<>();
 
 
-    // Cac ham xu ly logic cua product option
+
     public void addOption(ProductOption option){
         option.setProduct(this);
-    }
-
-    public void updateOption(ProductOption option){
-        option.setProduct(this);
         options.add(option);
+
+
     }
 
-    public boolean dismissOption(ProductOption option) {
-        return this.options.remove(option);
-    }
-
-
-    // Cac ham xu ly logic cua product specification
     public void addSpecification(ProductSpecification specification){
         specification.setProduct(this);
         specifications.add(specification);
@@ -82,6 +75,21 @@ public class Product {
         if(flag) {
             addSpecification(specification);
         }
+    }
+    public void updateOption(ProductOption option){
+        boolean flag = true;
+        for(ProductOption ot : options){
+            if(ot.getName().equals(option.getName()) && ot.getValue().equals(option.getValue())){
+                ot.setValue(option.getValue());
+                flag = false;
+            }
+        }
+        if(flag) {
+            addOption(option);
+        }
+    }
+    public boolean dismissOption(ProductOption option) {
+        return this.options.remove(option);
     }
 
     public boolean dismissSpecification(ProductSpecification specification) {

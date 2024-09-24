@@ -124,23 +124,32 @@ public class ProductServiceImpl implements ProductService {
         product.setThumbnailUrl(productDto.getThumbnailUrl());
         product.setCategoryUrl(productDto.getCategoryUrl());
         product.setProductSlug(SlugConvert.convert(product.getName()));
-        product.setOptions(new ArrayList<>());
-
+// set option
         List<ProductOption> options = productDto.getOptions()
                 .stream()
                 .map((option) -> this.optionMapper.mapToEntity(option))
                 .collect(Collectors.toList());
+        List<ProductOption> productoptions = new ArrayList<>(product.getOptions());
 
+        for(ProductOption option : productoptions){
+            boolean isContain = options.contains(option);
+            if(!isContain && product.dismissOption(option)){
+                ProductOption deletedOption = this.optionRepository.findById(option.getId()).orElseThrow(() -> new ResourceNotFoundException("Option", "id", option.getId()));
+                this.optionRepository.delete(deletedOption);
+            }
+        }
 
         for(ProductOption option : options){
             product.updateOption(option);
         }
 
+    // set category
         if(!product.getCategoryUrl().equals("")){
             String categoryUrl = SlugConvert.convert(product.getCategoryUrl());
             Category category = this.categoryRepository.findByUrlKey(categoryUrl);
             product.setCategory(category);
         }
+        //set specfication
         Set<ProductSpecification> specifications = productDto.getSpecifications().stream().map(specification -> specificationMapper.mapToEntity(specification)).collect(Collectors.toSet());
         Set<ProductSpecification> productSpecifications = new HashSet<>(product.getSpecifications());
         for(ProductSpecification specification : productSpecifications){
