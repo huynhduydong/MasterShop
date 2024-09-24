@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Integer id;
+    private Long id;
     @CreationTimestamp
     @Column(updatable = false)
     protected LocalDateTime createDate;

@@ -111,8 +111,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto updateProduct(ProductDto productDto, Long productId) {
-        Product product = this.productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        Product product = this.productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 
         product.setName(productDto.getName());
         product.setBrand(productDto.getBrand());
@@ -125,40 +124,40 @@ public class ProductServiceImpl implements ProductService {
         product.setThumbnailUrl(productDto.getThumbnailUrl());
         product.setCategoryUrl(productDto.getCategoryUrl());
         product.setProductSlug(SlugConvert.convert(product.getName()));
+        product.setOptions(new ArrayList<>());
 
-        // Xóa các options cũ
-        product.setOptions(new HashSet<>());
-
-        // Xử lý các options mới
         List<ProductOption> options = productDto.getOptions()
                 .stream()
-                .map(option -> {
-                    // Sử dụng merge để chắc chắn rằng các đối tượng ProductOption nằm trong context
-                    ProductOption managedOption = optionRepository.findById(option.getId())
-                            .orElseThrow(() -> new ResourceNotFoundException("ProductOption", "id", option.getId()));
-                    managedOption.setName(option.getName());
-                    managedOption.setValue(option.getValue());
-                    return managedOption;
-                })
+                .map((option) -> this.optionMapper.mapToEntity(option))
                 .collect(Collectors.toList());
 
-        // Cập nhật các option vào product
-        for (ProductOption option : options) {
+
+        for(ProductOption option : options){
             product.updateOption(option);
         }
 
-        // Xử lý tương tự cho specifications
-        Set<ProductSpecification> specifications = productDto.getSpecifications().stream()
-                .map(specificationMapper::mapToEntity)
-                .collect(Collectors.toSet());
+        if(!product.getCategoryUrl().equals("")){
+            String categoryUrl = SlugConvert.convert(product.getCategoryUrl());
+            Category category = this.categoryRepository.findByUrlKey(categoryUrl);
+            product.setCategory(category);
+        }
+        Set<ProductSpecification> specifications = productDto.getSpecifications().stream().map(specification -> specificationMapper.mapToEntity(specification)).collect(Collectors.toSet());
+        Set<ProductSpecification> productSpecifications = new HashSet<>(product.getSpecifications());
+        for(ProductSpecification specification : productSpecifications){
+            boolean isContain = specifications.contains(specification);
+            if(!isContain && product.dismissSpecification(specification)){
+                ProductSpecification deletedSpecification = this.specificationRepository.findById(specification.getId()).orElseThrow(() -> new ResourceNotFoundException("Specification", "id", specification.getId()));
+                this.specificationRepository.delete(deletedSpecification);
+            }
+        }
 
-        // Cập nhật specifications cho product
-        product.setSpecifications(specifications);
+        for(ProductSpecification specification : specifications){
+            product.updateSpecification(specification);
+        }
 
-        // Lưu product
-        Product updatedProduct = productRepository.save(product);
+        this.productRepository.save(product);
 
-        return productMapper.mapToDto(updatedProduct);
+        return productMapper.mapToDto(product);
     }
 
 
