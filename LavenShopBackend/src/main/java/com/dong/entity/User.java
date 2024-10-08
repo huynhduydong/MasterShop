@@ -31,6 +31,7 @@ public class User {
     private String phone;
     private String gender;
     private Date dateOfBirth;
+    private Boolean active;
     @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
             name = "users_roles",
@@ -40,4 +41,7 @@ public class User {
     private Set<Role> roles;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Address> addresses = new HashSet<>();
+    public boolean isActive() {
+        return active;
+    }
 }

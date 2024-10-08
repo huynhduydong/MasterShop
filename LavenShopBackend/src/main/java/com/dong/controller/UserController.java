@@ -67,4 +67,23 @@ public class UserController {
     ){
         return new ResponseEntity<>(this.userService.searchUser(name, pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
+    @PutMapping("/{userId}/deactivate")
+    public ResponseEntity<String> deactivateUser(@PathVariable Long userId) {
+        boolean deactivated = this.userService.deactivateUser(userId);
+        if (deactivated) {
+            return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK);
+
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @PutMapping("/{userId}/activate")
+    public ResponseEntity<String> activateUser(@PathVariable Long userId) {
+        boolean activated = this.userService.activateUser(userId);
+        if (activated) {
+            return ResponseEntity.ok("User activated successfully");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

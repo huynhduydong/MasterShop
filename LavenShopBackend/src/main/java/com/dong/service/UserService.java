@@ -13,4 +13,7 @@ public interface UserService {
     void deleteUser(Long userId);
     UserDto getUserProfile(Long userId);
     ObjectResponse<UserDto> searchUser(String name, int pageNo, int pageSize, String sortBy, String sortDir);
+    public boolean deactivateUser(Long userId);
+    public boolean activateUser(Long userId);
+
 }

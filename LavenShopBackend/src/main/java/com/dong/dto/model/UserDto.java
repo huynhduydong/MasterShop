@@ -27,4 +27,6 @@ public class UserDto {
 
     private String gender;
     private Date dateOfBirth;
+    private Boolean active;
+
 }

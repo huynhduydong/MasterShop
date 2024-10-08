@@ -4,6 +4,7 @@ import com.dong.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,4 +22,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.name LIKE CONCAT('%', :name, '%')", nativeQuery = true
     )
     Page<User> searchUserByName(@Param("name") String name, Pageable pageable);
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE User u SET u.active = false WHERE u.id = :userId")
+    int deactivateUser(@Param("userId") Long userId);
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE User u SET u.active = true WHERE u.id = :userId")
+    int activateUser(@Param("userId") Long userId);
 }

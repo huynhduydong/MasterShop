@@ -1,11 +1,10 @@
 package com.dong.config;
 
 
+import com.dong.security.UserDetailsImpl;
 import com.dong.utils.OAuth2Utils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -66,10 +65,16 @@ public class OAuth2PasswordGrantAuthenticationProvider implements Authentication
         try {
             credentialsAuthentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            UserDetailsImpl userDetails = (UserDetailsImpl) credentialsAuthentication.getPrincipal();
+            if (!userDetails.isActive()) {
+                throw new LockedException("Tài khoản người dùng đã bị khóa");
+            }
         } catch (AuthenticationException e) {
-            throw new OAuth2AuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
+            if (e instanceof OAuth2AuthenticationException) {
+                throw e; // Rethrow our custom OAuth2AuthenticationException
+            }
+            throw new OAuth2AuthenticationException(new OAuth2Error("invalid_credentials", "Invalid username or password", null));
         }
-
         // Get authentication object
         OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken =
                 (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();

@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/address")
+@RequestMapping("/api/v1/address")
 @AllArgsConstructor
 public class AddressController {
     AddressService addressService;
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     public ResponseEntity<AddressDto> createAddress(@AuthenticationPrincipal Jwt principal,
                                                     @RequestBody AddressDto addressDto){
         long userId = principal.getClaim("id");

@@ -11,6 +11,7 @@ import com.dong.exception.ResourceNotFoundException;
 import com.dong.repositories.RoleRepository;
 import com.dong.repositories.UserRepository;
 import com.dong.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -165,5 +166,18 @@ public class UserServiceImpl implements UserService {
         response.setLast(pages.isLast());
         response.setTotalPages(pages.getTotalPages());
         return response;
+    }
+
+    @Override
+    @Transactional
+    public boolean deactivateUser(Long userId) {
+        int updatedRows = this.userRepository.deactivateUser(userId);
+        return updatedRows > 0;
+    }
+    @Override
+    @Transactional
+    public boolean activateUser(Long userId) {
+        int updatedRows = this.userRepository.activateUser(userId);
+        return updatedRows > 0;
     }
 }
