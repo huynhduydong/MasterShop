@@ -97,8 +97,7 @@ public class AuthorizationServerConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/v1/notifications/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/products/product-options/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/v1/carts/order-cart**").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/order").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/order/paypal_capture/**").permitAll()
+                                .requestMatchers("/api/v1/address**").permitAll()
 
 
                         // Phân quyền cho các thao tác với user chỉ dành cho admin
