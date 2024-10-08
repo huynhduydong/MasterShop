@@ -41,4 +41,7 @@ public class User {
     private Set<Role> roles;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Address> addresses = new HashSet<>();
+    public boolean isActive() {
+        return active;
+    }
 }

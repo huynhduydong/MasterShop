@@ -71,7 +71,8 @@ public class UserController {
     public ResponseEntity<String> deactivateUser(@PathVariable Long userId) {
         boolean deactivated = this.userService.deactivateUser(userId);
         if (deactivated) {
-            return ResponseEntity.ok("User deactivated successfully");
+            return new ResponseEntity<>("User deactivated successfully", HttpStatus.OK);
+
         } else {
             return ResponseEntity.notFound().build();
         }
