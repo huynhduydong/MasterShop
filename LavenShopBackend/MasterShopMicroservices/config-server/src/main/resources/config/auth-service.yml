@@ -1,0 +1,82 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/mastershop_auth?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        connection.characterEncoding: utf8
+        connection.CharSet: utf8
+        connection.useUnicode: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+mastershop:
+  app:
+    jwtSecret: 5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437
+    jwtExpirationMs: 86400000 # 24 hours
+
+logging:
+  level:
+    com.dong.authservice: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+security:
+  oauth2:
+    authorizationserver:
+      client:
+        mastershop-client:
+          registration:
+            client-id: mastershop-client
+            client-secret: "{noop}secret"
+            client-authentication-methods:
+              - client_secret_basic
+            authorization-grant-types:
+              - authorization_code
+              - refresh_token
+              - client_credentials
+              - password
+            redirect-uris:
+              - http://localhost:8080/login/oauth2/code/mastershop-client
+            scopes:
+              - openid
+              - profile
+              - email
+              - roles
+          require-authorization-consent: false
+
+mastershop:
+  security:
+    jwt:
+      issuer: http://localhost:8081
+      expiration: 3600
+      refresh-token:
+        expiration: 86400 
